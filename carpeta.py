@@ -1,35 +1,39 @@
 from gestion import gestion
 
 class Carpeta(gestion):
-    def __init__(self):
+    def __init__(self, nombre):
+        self.nombre = nombre
         self._mensajes = []
         self.subcarpetas = []
 
     def agregar_subcarpeta(self, carpeta):
-        self.subcarpetas.append(carpeta) #añade subcarpetas al arbol
+        self.subcarpetas.append(carpeta)  # Añade una subcarpeta al árbol
 
     def agregar_mensaje(self, mensaje):
-        self._mensajes.append(mensaje) #insetar mensaje en la carpeta que se encuentra actualmente
+        self._mensajes.append(mensaje)  # Inserta un mensaje en esta carpeta
 
     def recibir_mensaje(self, mensaje):
-        self.agregar_mensaje(mensaje) #recibe el mensaje y lo agrega a la carpeta
+        self.agregar_mensaje(mensaje)  # Recibe y almacena el mensaje
 
     def enviar_mensaje(self, mensaje):
-        mensaje.destino.recibir_mensaje(mensaje) #envia el mensaje a la carpeta destino
+        if hasattr(mensaje, 'destino'):
+            mensaje.destino.recibir_mensaje(mensaje)  # Envía el mensaje a la carpeta destino donde el hasattr verifica si el mensaje tiene atributo destino
 
     def listar_mensajes(self):
-        return self._mensajes #retorna todos los mensajes almacenados en la carpeta
+        return self._mensajes  # Retorna los mensajes almacenados en esta carpeta 
 
-    def estructura(self, nivel=0):
+    def mostrar_estructura(self, nivel=0):
+        indent = "  " * nivel
+        print(f"{indent} nombre de la carpeta 📂 {self.nombre}")
         for mensaje in self._mensajes:
-            print((nivel + 1) + f"- {mensaje.mensaje}")
-        for sub in self.subcarpetas:
-            sub.mostrar_estructura(nivel + 1) #muetras la estructura jerarquica de las carpetas y subcarpetas usando la recusivdad para recorrer el arbol
-    
+            print(f"{indent}  tus mensajes 📨  {mensaje.mensaje}")
+        for subcarpeta in self.subcarpetas:
+            subcarpeta.mostrar_estructura(nivel + 1)  # Recursividad para mostrar jerarquía
+
     def mover_mensaje(self, mensaje, carpeta_destino):
         if mensaje in self._mensajes:
             self._mensajes.remove(mensaje)
-            carpeta_destino.agregar_mensaje(mensaje) #permite mover mensajes entre carpetas
+            carpeta_destino.agregar_mensaje(mensaje)  # Mueve el mensaje a otra carpeta
 
     def buscar_mensajes(self, criterio):
         criterio = criterio.lower()
@@ -38,6 +42,5 @@ class Carpeta(gestion):
             if criterio in m.mensaje.lower() or criterio in m.remitente.mail.lower()
         ]
         for subcarpeta in self.subcarpetas:
-            resultados += subcarpeta.buscar_mensajes(criterio)
-        return resultados #realiza una busqueda recursiva en el arbol de las carpetas buscando mensajes que coincidan con el criterio dado donde a lo ultimo retorna una lista con todos los mensajes que coinciden
-
+            resultados.extend(subcarpeta.buscar_mensajes(criterio))  # Búsqueda recursiva
+        return resultados
