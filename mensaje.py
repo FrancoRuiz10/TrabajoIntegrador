@@ -8,7 +8,7 @@ class Mensaje:
     def remitente(self): 
         return self._remitente #retorna el remitente del mensaje
 
-    @property
+    @property 
     def destino(self):
         return self._destino #retorna el destino del mensaje
 
